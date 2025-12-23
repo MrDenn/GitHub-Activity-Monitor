@@ -4,7 +4,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.ArrayList;
 
 public class HttpRequestSender {
     private static final String USER_AGENT = "ActionTrackingTool/1.0";

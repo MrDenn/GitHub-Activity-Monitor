@@ -1,10 +1,4 @@
-import tools.jackson.databind.DeserializationFeature;
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
-
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.util.List;
 
 public class GithubActionMonitor {
