@@ -12,7 +12,7 @@ public class JacksonParser {
         mapper = new ObjectMapper();
     }
 
-    public List<WorkflowRun> parseJson(InputStream inputStream) throws IOException {
+    public List<WorkflowRun> parseJson(InputStream inputStream) {
         JsonNode root = mapper.readTree(inputStream);
         JsonNode runsNode = root.get("workflow_runs");
 
