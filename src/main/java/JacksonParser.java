@@ -4,23 +4,20 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 public class JacksonParser {
     ObjectMapper mapper;
-    WorkflowRunsResponse workflowRunsResponse;
 
     public JacksonParser() {
         mapper = new ObjectMapper();
     }
 
-    public WorkflowRun parseJson(InputStream inputStream) throws IOException {
+    public List<WorkflowRun> parseJson(InputStream inputStream) throws IOException {
         JsonNode root = mapper.readTree(inputStream);
+        JsonNode runsNode = root.get("workflow_runs");
 
-        workflowRunsResponse = mapper.readValue(inputStream, WorkflowRunsResponse.class);
-
-        System.out.println(workflowRunsResponse);
-
-        return null;
+        return mapper.readerForListOf(WorkflowRun.class).readValue(runsNode);
     }
 
 }
