@@ -13,10 +13,9 @@ public class GithubActionMonitor {
         JacksonParser parser = new JacksonParser();
 
         try {
-//            InputStream response = requester.SendWorkflowRequest("https://api.github.com/repos/JetBrains/compose-multiplatform/actions/runs", 15000);
-//            WorkflowRun workflowRun = parser.parseJson(response);
-//            System.out.println(workflowRun.toString());
-            System.out.println(requester.GetStringResponse("https://api.github.com/repos/JetBrains/compose-multiplatform/actions/runs", 15000));
+            InputStream response = requester.SendWorkflowRequest("https://api.github.com/repos/JetBrains/compose-multiplatform/actions/runs", 15000);
+            WorkflowRun workflowRun = parser.parseJson(response);
+            System.out.println(workflowRun.toString());
 
         } catch (Exception e) {
             System.out.println(e.getMessage());

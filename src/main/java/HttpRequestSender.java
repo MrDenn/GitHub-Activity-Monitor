@@ -46,24 +46,4 @@ public class HttpRequestSender {
         //String[] responses = response.body().split(",");
         //System.out.println("ID: " + responses[0] + " | Name: " + responses[1] + " | SHA: " + responses[4]);
     }
-
-    public String GetStringResponse(String uri, int time) throws Exception {
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .GET()
-                .uri(URI.create(uri))
-                .header("User-Agent", USER_AGENT)
-                .header("Authorization", AUTHORIZATION)
-                .header("X-GitHub-Api-Version", API_VERSION)
-                .header("Accept", "application/vnd.github+json")
-                .build();
-
-        HttpResponse<String> response =
-                httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-        return response.body();
-
-        //String[] responses = response.body().split(",");
-        //System.out.println("ID: " + responses[0] + " | Name: " + responses[1] + " | SHA: " + responses[4]);
-    }
 }
