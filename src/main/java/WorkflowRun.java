@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class WorkflowRun {
     @JsonProperty("id")
-    private int runId;              // ID of this particular workflow run
+    private long runId;              // ID of this particular workflow run
     @JsonProperty("workflow_id")
-    private int workflowId;         // ID of the workflow, of which this is an instance
+    private long workflowId;         // ID of the workflow, of which this is an instance
     private String name;
     @JsonProperty("head_branch")
     private String headBranch;      //
