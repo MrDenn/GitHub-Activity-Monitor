@@ -14,7 +14,7 @@ public class JacksonParser {
 
     public List<WorkflowRun> parseWorkflowDetails(InputStream inputStream) {
         JsonNode root = mapper.readTree(inputStream);
-        JsonNode runsNode = root.get("workflow_runs");
+        JsonNode runsNode = root.path("workflow_runs");
 
         return mapper.readerForListOf(WorkflowRun.class).readValue(runsNode);
     }
