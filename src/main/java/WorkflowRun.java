@@ -31,16 +31,19 @@ public class WorkflowRun {
     @JsonProperty("head_sha")
     private String headSha;
 
+
     public String toString(){
         String output = "";
 
-        output += "id: " + runId + "\n";
-        output += "workflow_id: " + workflowId + "\n";
-        output += "name: " + name + "\n";
-        output += "head_branch: " + headBranch + "\n";
-        output += "event: " + event + "\n";
-        output += "status: " + status + "\n";
-        output += "conclusion: " + conclusion + "\n";
+        output += createdAt + " | ";
+        output += "id: " + runId + " | ";
+        output += "workflow_id: " + workflowId + " | ";
+        output += "name: " + name + " | ";
+        output += "event: " + event + " | ";
+        output += "status: " + status + " | ";
+        output += "conclusion: " + conclusion + " | ";
+        output += "head_branch: " + headBranch + " | ";
+        output += "head_branch: " + headSha;
 
         return output;
     }
