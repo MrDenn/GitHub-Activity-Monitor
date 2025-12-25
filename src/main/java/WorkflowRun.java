@@ -1,11 +1,10 @@
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.List;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class WorkflowRun {
-    /// Timestamp of when this workflow run was queued
-    @JsonProperty("created_at")
-    private String createdAt;
     /// ID of this particular workflow run
     @JsonProperty("id")
     private long runId;
@@ -21,7 +20,7 @@ public class WorkflowRun {
     /// Current status of this workflow run
     @JsonProperty("status")
     private String status;
-    /// Conclusion, with which this workflow run concluded
+    /// Result, with which this workflow run concluded
     @JsonProperty("conclusion")
     private String conclusion;
     /// Branch, under which this workflow run was created
@@ -30,6 +29,12 @@ public class WorkflowRun {
     /// SHA of the last commit in the head branch
     @JsonProperty("head_sha")
     private String headSha;
+    /// Timestamp of when this workflow run was queued
+    @JsonProperty("created_at")
+    private String createdAt;
+
+    /// List of all jobs that make up this workflow run
+    private List<Job> jobs;
 
 
     public String toString(){
@@ -46,5 +51,13 @@ public class WorkflowRun {
         output += "head_branch: " + headSha;
 
         return output;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setJobs(List<Job> jobs) {
+        this.jobs = jobs;
     }
 }
