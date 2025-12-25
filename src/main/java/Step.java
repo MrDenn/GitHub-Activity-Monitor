@@ -1,7 +1,5 @@
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.List;
-
 public class Step {
     /// Name of this workflow run
     @JsonProperty("name")
