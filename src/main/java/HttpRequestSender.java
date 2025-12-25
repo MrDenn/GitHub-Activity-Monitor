@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -7,32 +8,62 @@ import java.time.Duration;
 
 public class HttpRequestSender {
     private static final String USER_AGENT = "ActionTrackingTool/1.0";
-    private static final String AUTHORIZATION = "Bearer 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";
     private static final String API_VERSION = "2022-11-28";
 
-    private HttpClient httpClient;
+    private final String repo;
+    private final String authorisation;
+
+    private final HttpClient httpClient;
 
     /**
-     * Constructor, initialises the httpClient variable with default values to be later used when
-     * sending HTTP requests
+     * Constructor
+     *
+     * @param repo Address of desired repository within GitHub in [owner/repo] String form
+     * @param token GitHub personal access token in String form (can have no write permissions)
+     * @param timeout Http timeout given in seconds
      */
-    public HttpRequestSender(){
+    public HttpRequestSender(String repo, String token, int timeout) {
+        this.repo = repo;
+        this.authorisation = "Bearer " + token;
         this.httpClient = HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(15))
-                .build();;
+                .connectTimeout(Duration.ofSeconds(timeout))
+                .build();
     }
 
     /**
-     * Constructs and sends an HTTP GET request to query all Workflow updates within the last
-     * 15 000 milliseconds (or amount of time that corresponds to the update frequency)
+     * Retrieves all details of workflow runs for a given repository that meet the given parameters
+     *
+     * @param paramName name of parameter used to filter workflow runs
+     * @param paramValue value of parameter used to filter workflow runs
+     * @return All details received from REST API in raw InputStream form
+     * @throws IOException if an I/O error occurs when sending or receiving,
+     * or the client has {@linkplain ##closing shut down}
+     * @throws InterruptedException if the operation is interrupted
      */
-    public InputStream SendWorkflowRequest(String uri, int time) throws Exception {
+    public InputStream getWorkflowRunsWithParameter(String paramName, String paramValue)
+            throws IOException, InterruptedException {
+
+        return getHttpResponse("https://api.github.com/repos/" + this.repo + "/actions/runs?" +
+                paramName + "=" + paramValue);
+    }
+
+    /**
+     * Retrieves a JSON response by the REST API to HTTP GET command with the appropriate URI
+     *
+     * @param uri URI, to which the HTTP response it to be sent
+     * @return All details received from REST API in raw InputStream form
+     * @throws IOException if an I/O error occurs when sending or receiving,
+     * or the client has {@linkplain ##closing shut down}
+     * @throws InterruptedException if the operation is interrupted
+     */
+    private InputStream getHttpResponse(String uri)
+            throws IOException, InterruptedException {
 
         HttpRequest request = HttpRequest.newBuilder()
                 .GET()
                 .uri(URI.create(uri))
                 .header("User-Agent", USER_AGENT)
-                .header("Authorization", AUTHORIZATION)
+                .header("Authorization", authorisation)
                 .header("X-GitHub-Api-Version", API_VERSION)
                 .header("Accept", "application/vnd.github+json")
                 .build();
@@ -41,8 +72,5 @@ public class HttpRequestSender {
                 httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
 
         return response.body();
-
-        //String[] responses = response.body().split(",");
-        //System.out.println("ID: " + responses[0] + " | Name: " + responses[1] + " | SHA: " + responses[4]);
     }
 }
