@@ -48,6 +48,21 @@ public class HttpRequestSender {
     }
 
     /**
+     * Retrieves all details of all jobs for a given repository and workflow
+     *
+     * @param workflowId id of the parent workflow run
+     * @return All details received from REST API in raw InputStream form
+     * @throws IOException if an I/O error occurs when sending or receiving,
+     * or the client has {@linkplain ##closing shut down}
+     * @throws InterruptedException if the operation is interrupted
+     */
+    public InputStream getJobs(long workflowId) throws IOException, InterruptedException {
+
+        return getHttpResponse("https://api.github.com/repos/" + this.repo + "/actions/runs/" +
+                workflowId + "jobs");
+    }
+
+    /**
      * Retrieves a JSON response by the REST API to HTTP GET command with the appropriate URI
      *
      * @param uri URI, to which the HTTP response it to be sent
