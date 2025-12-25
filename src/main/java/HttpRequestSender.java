@@ -59,7 +59,7 @@ public class HttpRequestSender {
     public InputStream getJobs(long workflowId) throws IOException, InterruptedException {
 
         return getHttpResponse("https://api.github.com/repos/" + this.repo + "/actions/runs/" +
-                workflowId + "jobs");
+                workflowId + "/jobs");
     }
 
     /**
