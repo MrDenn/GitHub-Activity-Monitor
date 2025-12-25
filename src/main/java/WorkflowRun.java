@@ -63,6 +63,10 @@ public class WorkflowRun {
         return status;
     }
 
+    public long getRunId() {
+        return runId;
+    }
+
     public void setJobs(List<Job> jobs) {
         this.jobs = jobs;
     }

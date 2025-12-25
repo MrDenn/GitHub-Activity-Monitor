@@ -30,6 +30,7 @@ public class GithubActionMonitor {
 
         try {
             List<WorkflowRun> workflowRuns = getWorkflowRunsAfterTimestamp(Instant.now().minusMillis(60000*5));
+            updateJobsInWorkflowRuns(workflowRuns);
 
             for (WorkflowRun workflowRun : workflowRuns) {
                 System.out.println(workflowRun.toString());
@@ -47,5 +48,14 @@ public class GithubActionMonitor {
                 "created", "%3E" + timestamp.toString());
 
         return parser.parseWorkflowDetails(data);
+    }
+
+    private static void updateJobsInWorkflowRuns(List<WorkflowRun> workflowRuns)
+            throws IOException, InterruptedException {
+
+        for (WorkflowRun workflowRun : workflowRuns) {
+            InputStream data = requester.getJobs(workflowRun.getRunId());
+            workflowRun.setJobs(parser.parseJobDetails(data));
+        }
     }
 }
