@@ -37,7 +37,7 @@ public class WorkflowRun {
     private List<Job> jobs;
 
 
-    public String toString(){
+    public String toString() {
         String output = "";
 
         output += createdAt + " | ";
@@ -48,7 +48,13 @@ public class WorkflowRun {
         output += "status: " + status + " | ";
         output += "conclusion: " + conclusion + " | ";
         output += "head_branch: " + headBranch + " | ";
-        output += "head_branch: " + headSha;
+        output += "head_branch: " + headSha + "\n";
+
+        if (jobs != null) {
+            for (Job job : jobs) {
+                output += job.toString() + "\n";
+            }
+        }
 
         return output;
     }

@@ -40,10 +40,12 @@ public class Job {
         output += "run_id: " + runId + " | ";
         output += "name: " + name + " | ";
         output += "status: " + status + " | ";
-        output += "conclusion: " + conclusion + " | ";
+        output += "conclusion: " + conclusion + "\n";
 
-        for (Step step : steps){
-            output += step.toString() + "\n";
+        if (steps != null) {
+            for (Step step : steps) {
+                output += step.toString() + "\n";
+            }
         }
 
         return output;
