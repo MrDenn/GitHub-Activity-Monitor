@@ -1,12 +1,12 @@
 import java.time.Instant;
 
 public class Event {
-    private String timestamp;
-    private EventType eventType;
-    private String name;
-    private String identifier;
-    private String headBranch;
-    private String branchSha;
+    private final String timestamp;
+    private final EventType eventType;
+    private final String name;
+    private final String identifier;
+    private final String headBranch;
+    private final String branchSha;
 
     public Event(String timestamp, EventType eventType, String name, String headBranch, String branchSha) {
         this.timestamp = timestamp;
