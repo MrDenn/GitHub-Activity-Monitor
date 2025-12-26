@@ -50,6 +50,19 @@ public class GithubActionMonitor {
         return parser.parseWorkflowDetails(data);
     }
 
+    private static List<WorkflowRun> getWorkflowRunPreviousAttempts(List<WorkflowRun> workflowRuns)
+            throws IOException, InterruptedException {
+
+        for (int i = 0; i < workflowRuns.size(); i++) {
+            if (workflowRuns.get(i).getAttemptNumber() > 1){
+                InputStream dataPrev = requester.getHttpResponse(workflowRuns.get(i).getPreviousAttemptUrl());
+                workflowRuns.addAll(parser.parseSingleWorkflowRunDetails(dataPrev));
+            }
+        }
+
+        return workflowRuns;
+    }
+
     private static void updateJobsInWorkflowRuns(List<WorkflowRun> workflowRuns)
             throws IOException, InterruptedException {
 

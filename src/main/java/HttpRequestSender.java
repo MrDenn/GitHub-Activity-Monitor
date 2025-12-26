@@ -71,7 +71,7 @@ public class HttpRequestSender {
      * or the client has {@linkplain ##closing shut down}
      * @throws InterruptedException if the operation is interrupted
      */
-    private InputStream getHttpResponse(String uri)
+    public InputStream getHttpResponse(String uri)
             throws IOException, InterruptedException {
 
         HttpRequest request = HttpRequest.newBuilder()

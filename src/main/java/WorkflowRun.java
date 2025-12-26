@@ -42,6 +42,12 @@ public class WorkflowRun {
 
     /// List of all jobs that make up this workflow run
     private List<Job> jobs;
+    /// Consecutive number of this attempt out of all attempts of this workflow run
+    @JsonProperty("run_attempt")
+    private long attemptNumber;
+    /// URL to the previous attempt of this workflow run
+    @JsonProperty("previous_attempt_url")
+    private String previousAttemptUrl;
 
 
     public String toString() {
@@ -73,6 +79,14 @@ public class WorkflowRun {
 
     public long getRunId() {
         return runId;
+    }
+
+    public long getAttemptNumber() {
+        return attemptNumber;
+    }
+
+    public String getPreviousAttemptUrl() {
+        return previousAttemptUrl;
     }
 
     public void setJobs(List<Job> jobs) {
