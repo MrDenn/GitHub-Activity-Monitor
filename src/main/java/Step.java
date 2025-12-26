@@ -1,5 +1,8 @@
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Step {
     /// Name of this workflow run
     @JsonProperty("name")
@@ -31,5 +34,20 @@ public class Step {
         output += "conclusion: " + conclusion + " | ";
 
         return output;
+    }
+
+    public List<Event> getEvents(String headBranch, String headSha) {
+        List<Event> events = new ArrayList<>();
+
+        if (startedAt != null) {
+            events.add(new Event(this.startedAt, EventType.STEP_STARTED,
+                    name, headBranch, headSha));
+        }
+        if (completedAt != null) {
+            events.add(new Event(this.completedAt, EventType.STEP_COMPLETED,
+                    name, headBranch, headSha));
+        }
+
+        return events;
     }
 }

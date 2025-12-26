@@ -1,5 +1,6 @@
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Job {
@@ -49,5 +50,28 @@ public class Job {
         }
 
         return output;
+    }
+
+    public List<Event> getEvents(String headBranch, String headSha) {
+        List<Event> events = new ArrayList<>();
+
+        events.add(new Event(this.createdAt, EventType.JOB_QUEUED,
+                name, headBranch, headSha));
+
+        if (startedAt != null) {
+            events.add(new Event(this.startedAt, EventType.JOB_STARTED,
+                    name, headBranch, headSha));
+        }
+
+        if (completedAt != null) {
+            events.add(new Event(this.completedAt, EventType.JOB_COMPLETED,
+                    name, headBranch, headSha));
+        }
+
+        for (Step step : steps) {
+            events.addAll(step.getEvents(headBranch, headSha));
+        }
+
+        return events;
     }
 }

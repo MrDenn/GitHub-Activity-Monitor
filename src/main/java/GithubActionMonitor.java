@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GithubActionMonitor {
@@ -35,6 +36,13 @@ public class GithubActionMonitor {
             for (WorkflowRun workflowRun : workflowRuns) {
                 System.out.println(workflowRun.toString());
             }
+
+            List<Event> events = new ArrayList<>();
+            for (WorkflowRun workflowRun : workflowRuns) {
+                events.addAll(workflowRun.getEvents());
+            }
+
+            System.out.println(events);
 
         } catch (Exception e) {
             System.out.println(e.getMessage());

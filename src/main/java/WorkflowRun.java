@@ -42,6 +42,7 @@ public class WorkflowRun {
 
     /// List of all jobs that make up this workflow run
     private List<Job> jobs;
+
     /// Consecutive number of this attempt out of all attempts of this workflow run
     @JsonProperty("run_attempt")
     private long attemptNumber;
@@ -71,6 +72,21 @@ public class WorkflowRun {
         }
 
         return output;
+    }
+
+    public List<Event> getEvents() {
+        List<Event> events = new ArrayList<>();
+
+        events.add(new Event(this.createdAt, EventType.WORKFLOW_QUEUED,
+                displayTitle + " [" + name + "]", headBranch, headSha));
+
+        for (Job job : jobs) {
+            events.addAll(job.getEvents(headBranch, headSha));
+        }
+
+        events.sort(Comparator.comparing(Event::getTimestamp));
+
+        return events;
     }
 
     public String getStatus() {

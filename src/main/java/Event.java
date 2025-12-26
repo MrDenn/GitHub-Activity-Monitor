@@ -1,3 +1,5 @@
+import java.time.Instant;
+
 public class Event {
     private String timestamp;
     private EventType eventType;
@@ -13,5 +15,23 @@ public class Event {
         this.identifier = headBranch;
         this.headBranch = headBranch;
         this.branchSha = branchSha;
+    }
+
+    public Instant getTimestamp() {
+        return Instant.parse(timestamp);
+    }
+
+    @Override
+    public String toString() {
+        String output = "";
+
+        output += "Timestamp: " + timestamp + " | ";
+        output += "EventType: " + eventType + " | ";
+        output += "Name: " + name + " | ";
+        output += "Identifier: " + identifier + " | ";
+        output += "HeadBranch: " + headBranch + " | ";
+        output += "BranchSha: " + branchSha + "\n";
+
+        return output;
     }
 }
