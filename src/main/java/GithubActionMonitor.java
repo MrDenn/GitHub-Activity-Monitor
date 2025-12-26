@@ -30,7 +30,7 @@ public class GithubActionMonitor {
         parser = new JacksonParser();
 
         try {
-            List<WorkflowRun> workflowRuns = getWorkflowRunsAfterTimestamp(Instant.now().minusMillis(60000*5));
+            List<WorkflowRun> workflowRuns = getWorkflowRunsAfterTimestamp(Instant.now().minusMillis(60000*3));
             updateJobsInWorkflowRuns(workflowRuns);
 
             for (WorkflowRun workflowRun : workflowRuns) {
