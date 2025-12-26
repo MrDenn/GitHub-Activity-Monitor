@@ -1,6 +1,10 @@
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.io.InputStream;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -14,6 +18,9 @@ public class WorkflowRun {
     /// Name of this workflow run
     @JsonProperty("name")
     private String name;
+    /// Display name of this workflow run
+    @JsonProperty("display_title")
+    private String displayTitle;
     /// Event, which triggered the creation of this workflow run
     @JsonProperty("event")
     private String event;
@@ -44,6 +51,7 @@ public class WorkflowRun {
         output += "id: " + runId + " | ";
         output += "workflow_id: " + workflowId + " | ";
         output += "name: " + name + " | ";
+        output += "display_title: " + displayTitle + " | ";
         output += "event: " + event + " | ";
         output += "status: " + status + " | ";
         output += "conclusion: " + conclusion + " | ";
