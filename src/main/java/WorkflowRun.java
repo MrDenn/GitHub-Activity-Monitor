@@ -39,10 +39,13 @@ public class WorkflowRun {
     /// Timestamp of when this workflow run was queued
     @JsonProperty("created_at")
     private String createdAt;
-
-    /// List of all jobs that make up this workflow run
-    private List<Job> jobs;
-
+    /// Timestamp of when this workflow run was started
+    @JsonProperty("run_started_at")
+    private String startedAt;
+    /// Timestamp of when this workflow run was last updated
+    /// (the last update for each workflow run is completion)
+    @JsonProperty("updated_at")
+    private String updatedAt;
     /// Consecutive number of this attempt out of all attempts of this workflow run
     @JsonProperty("run_attempt")
     private long attemptNumber;
@@ -50,7 +53,11 @@ public class WorkflowRun {
     @JsonProperty("previous_attempt_url")
     private String previousAttemptUrl;
 
+    /// List of all jobs that make up this workflow run
+    private List<Job> jobs;
 
+
+    @Override
     public String toString() {
         String output = "";
 

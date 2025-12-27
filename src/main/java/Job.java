@@ -42,6 +42,9 @@ public class Job {
         output += "name: " + name + " | ";
         output += "status: " + status + " | ";
         output += "conclusion: " + conclusion + "\n";
+        output += "creat_at: " + createdAt + "\n";
+        output += "start_at: " + startedAt + "\n";
+        output += "compl_at: " + completedAt + "\n";
 
         if (steps != null) {
             for (Step step : steps) {
