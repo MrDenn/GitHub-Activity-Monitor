@@ -57,6 +57,7 @@ public class GithubActionMonitor {
                 getWorkflowRunsAfterTimestamp(lastTimestamp);
                 Instant newTimestamp = Instant.now();
 
+                removeStuckQueuedWorkflowRuns();
                 updateStatusOfWorkflowRuns();
                 updateJobsInWorkflowRuns();
 
@@ -149,5 +150,9 @@ public class GithubActionMonitor {
     private static void removeCompletedWorkflowRuns(Instant cutoffTimestamp) {
         workflowRuns.removeIf(run -> (run.getStatus().equals("completed")
                 && run.getUpdatedAt().isBefore(cutoffTimestamp)));
+    }
+
+    private static void removeStuckQueuedWorkflowRuns() {
+        workflowRuns.removeIf(run -> run.getCreatedAt().isBefore(Instant.now().minusSeconds(86400)));
     }
 }
