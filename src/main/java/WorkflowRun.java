@@ -1,7 +1,6 @@
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.io.InputStream;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -81,16 +80,33 @@ public class WorkflowRun {
         return output;
     }
 
-    public List<Event> getEvents() {
+    /**
+     * Extract events for creation, starting and completion of the workflow run, and all underlying
+     * jobs and steps.
+     *
+     * @return List of all events as Event objects
+     */
+    public List<Event> getEvents(Instant lastAccessedTimestamp) {
         List<Event> events = new ArrayList<>();
 
         events.add(new Event(this.createdAt, EventType.WORKFLOW_QUEUED,
                 displayTitle + " [" + name + "]", headBranch, headSha));
 
+        if (startedAt != null) {
+            events.add(new Event(this.startedAt, EventType.WORKFLOW_STARTED,
+                    displayTitle + " [" + name + "]", headBranch, headSha));
+        }
+        if (conclusion != null) {
+            events.add(new Event(this.updatedAt, EventType.WORKFLOW_COMPLETED,
+                    displayTitle + " [" + name + "]", headBranch, headSha));
+        }
+
+
         for (Job job : jobs) {
             events.addAll(job.getEvents(headBranch, headSha));
         }
 
+        events.removeIf(e -> e.getTimestamp().isBefore(lastAccessedTimestamp));
         events.sort(Comparator.comparing(Event::getTimestamp));
 
         return events;
@@ -110,6 +126,10 @@ public class WorkflowRun {
 
     public String getPreviousAttemptUrl() {
         return previousAttemptUrl;
+    }
+
+    public WorkflowRunAttemptKey getRunAttemptKey() {
+        return new WorkflowRunAttemptKey(this.runId, this.attemptNumber);
     }
 
     public void setJobs(List<Job> jobs) {
