@@ -58,21 +58,21 @@ public class Job {
     public List<Event> getEvents(String headBranch, String headSha) {
         List<Event> events = new ArrayList<>();
 
-        events.add(new Event(this.createdAt, EventType.JOB_QUEUED,
-                name, headBranch, headSha));
+        events.add(new Event(this.createdAt, EventType.JOB_QUEUED, name, "Run ID: " +
+                this.runId + " | Job ID: " + this.jobId, headBranch, headSha));
 
         if (startedAt != null) {
-            events.add(new Event(this.startedAt, EventType.JOB_STARTED,
-                    name, headBranch, headSha));
+            events.add(new Event(this.startedAt, EventType.JOB_STARTED, name, "Run ID: " +
+                    this.runId + " | Job ID: " + this.jobId, headBranch, headSha));
         }
 
         if (completedAt != null) {
-            events.add(new Event(this.completedAt, EventType.JOB_COMPLETED,
-                    name, headBranch, headSha));
+            events.add(new Event(this.completedAt, EventType.JOB_COMPLETED, name, "Run ID: " +
+                    this.runId + " | Job ID: " + this.jobId, headBranch, headSha));
         }
 
         for (Step step : steps) {
-            events.addAll(step.getEvents(headBranch, headSha));
+            events.addAll(step.getEvents(this.runId, this.jobId, headBranch, headSha));
         }
 
         return events;

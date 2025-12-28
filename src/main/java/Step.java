@@ -36,16 +36,16 @@ public class Step {
         return output;
     }
 
-    public List<Event> getEvents(String headBranch, String headSha) {
+    public List<Event> getEvents(long runId, long jobId,String headBranch, String headSha) {
         List<Event> events = new ArrayList<>();
 
         if (startedAt != null) {
-            events.add(new Event(this.startedAt, EventType.STEP_STARTED,
-                    name, headBranch, headSha));
+            events.add(new Event(this.startedAt, EventType.STEP_STARTED, name, "Run ID: " +
+                    runId + " | Job ID: " + jobId, headBranch, headSha));
         }
         if (completedAt != null) {
-            events.add(new Event(this.completedAt, EventType.STEP_COMPLETED,
-                    name, headBranch, headSha));
+            events.add(new Event(this.completedAt, EventType.STEP_COMPLETED, name, "Run ID: " +
+                    runId + " | Job ID: " + jobId, headBranch, headSha));
         }
 
         return events;

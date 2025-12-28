@@ -90,15 +90,18 @@ public class WorkflowRun {
         List<Event> events = new ArrayList<>();
 
         events.add(new Event(this.createdAt, EventType.WORKFLOW_QUEUED,
-                displayTitle + " [" + name + "]", headBranch, headSha));
+                displayTitle + " [" + name + "]", "Run ID: " + this.runId +
+                " |                    ", headBranch, headSha));
 
         if (startedAt != null) {
             events.add(new Event(this.startedAt, EventType.WORKFLOW_STARTED,
-                    displayTitle + " [" + name + "]", headBranch, headSha));
+                    displayTitle + " [" + name + "]", "Run ID: " + this.runId +
+                    " |                    ", headBranch, headSha));
         }
         if (conclusion != null) {
             events.add(new Event(this.updatedAt, EventType.WORKFLOW_COMPLETED,
-                    displayTitle + " [" + name + "]", headBranch, headSha));
+                    displayTitle + " [" + name + "]", "Run ID: " + this.runId +
+                    " |                    ", headBranch, headSha));
         }
         if (jobs != null && !jobs.isEmpty()) {
             for (Job job : jobs) {
