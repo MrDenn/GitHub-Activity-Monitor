@@ -29,7 +29,7 @@ public class Event {
         output += String.format("%18s", eventType) + " | ";
         output += String.format("%-55s", name.substring(0, Math.min(name.length(), 55))) + " | ";
         output += "HeadBranch: " + headBranch + " | ";
-        output += "BranchSha: " + branchSha + "\n";
+        output += "BranchSha: " + branchSha;
 
         return output;
     }

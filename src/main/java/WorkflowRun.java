@@ -86,7 +86,7 @@ public class WorkflowRun {
      *
      * @return List of all events as Event objects
      */
-    public List<Event> getEvents(Instant lastAccessedTimestamp) {
+    public List<Event> getEvents(Instant timeStart, Instant timeEnd) {
         List<Event> events = new ArrayList<>();
 
         events.add(new Event(this.createdAt, EventType.WORKFLOW_QUEUED,
@@ -100,14 +100,16 @@ public class WorkflowRun {
             events.add(new Event(this.updatedAt, EventType.WORKFLOW_COMPLETED,
                     displayTitle + " [" + name + "]", headBranch, headSha));
         }
-
-
-        for (Job job : jobs) {
-            events.addAll(job.getEvents(headBranch, headSha));
+        if (jobs != null && !jobs.isEmpty()) {
+            for (Job job : jobs) {
+                events.addAll(job.getEvents(headBranch, headSha));
+            }
         }
 
-        events.removeIf(e -> e.getTimestamp().isBefore(lastAccessedTimestamp));
+        events.removeIf(e -> e.getTimestamp().isBefore(timeStart));
+        events.removeIf(e -> e.getTimestamp().isAfter(timeEnd));
         events.sort(Comparator.comparing(Event::getTimestamp));
+
 
         return events;
     }
@@ -118,6 +120,10 @@ public class WorkflowRun {
 
     public long getRunId() {
         return runId;
+    }
+
+    public Instant getUpdatedAt() {
+        return Instant.parse(updatedAt);
     }
 
     public long getAttemptNumber() {

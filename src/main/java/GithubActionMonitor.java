@@ -18,9 +18,6 @@ public class GithubActionMonitor {
     private static boolean isFirstIteration = true;
     private static Instant lastTimestamp;
 
-
-//    public record WorkflowRunAttemptKey(long runId, int attempt) {}
-
     public static void main(String[] args) {
         String repo;
         String token;
@@ -46,64 +43,42 @@ public class GithubActionMonitor {
         lastAccessTimestamps = new HashMap<>();
 
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-        scheduler.scheduleWithFixedDelay(() -> monitorRepositoryEvents(), 10, 10, TimeUnit.SECONDS);
-
-
-//        try {
-//            List<WorkflowRun> workflowRuns = getWorkflowRunsAfterTimestamp(Instant.now().minusMillis(60000*3));
-//            updateJobsInWorkflowRuns(workflowRuns);
-//
-//            for (WorkflowRun workflowRun : workflowRuns) {
-//                System.out.println(workflowRun.toString());
-//            }
-//
-//            List<Event> events = new ArrayList<>();
-//            for (WorkflowRun workflowRun : workflowRuns) {
-//                events.addAll(workflowRun.getEvents());
-//            }
-//
-//            System.out.println(events);
-//
-//        } catch (Exception e) {}
+        scheduler.scheduleWithFixedDelay(() -> monitorRepositoryEvents(), 0, 1, TimeUnit.SECONDS);
     }
 
     private static void monitorRepositoryEvents () {
         try {
 
             if (isFirstIteration) {
-                getWorkflowRunsNonCompleted(workflowRuns);
+                getWorkflowRunsNonCompleted();
                 lastTimestamp = Instant.now();
                 isFirstIteration = false;
             } else {
-                getWorkflowRunsAfterTimestamp(workflowRuns, lastTimestamp);
-                updateJobsInWorkflowRuns(workflowRuns);
+                getWorkflowRunsAfterTimestamp(lastTimestamp);
+                Instant newTimestamp = Instant.now();
+
+                updateJobsInWorkflowRuns();
 
 //                for (WorkflowRun workflowRun : workflowRuns) {
 //                    System.out.println(workflowRun.toString());
 //                }
 
                 List<Event> eventsOfRun;
-                Instant lastAccessedTimestamp;
 
                 for (WorkflowRun run : workflowRuns) {
-                    if (lastAccessTimestamps.get(run.getRunAttemptKey()) == null) {
-                        lastAccessedTimestamp = lastTimestamp;
-                    } else {
-                        lastAccessedTimestamp = lastAccessTimestamps.get(run.getRunAttemptKey());
-                    }
-                    eventsOfRun = run.getEvents(lastAccessedTimestamp);
-                    if (eventsOfRun.size() > 0) {
-                        lastAccessedTimestamp = eventsOfRun.getLast().getTimestamp();
-                    } else {
-                        lastAccessedTimestamp = lastTimestamp;
-                    }
-                    lastAccessTimestamps.put(run.getRunAttemptKey(), lastAccessedTimestamp);
+                    eventsOfRun = run.getEvents(lastTimestamp, newTimestamp);
                     events.addAll(eventsOfRun);
                 }
                 events.sort(Comparator.comparing(Event::getTimestamp));
 
-                System.out.println(events);
+                for (Event event : events) {
+                    System.out.println(event);
+                }
+
                 events.clear();
+
+                removeCompletedWorkflowRuns(lastTimestamp);
+                lastTimestamp = newTimestamp;
             }
 
         } catch (Exception e) {
@@ -117,7 +92,7 @@ public class GithubActionMonitor {
         }
     }
 
-    private static void getWorkflowRunsAfterTimestamp(List<WorkflowRun> workflowRuns, Instant timestamp)
+    private static void getWorkflowRunsAfterTimestamp(Instant timestamp)
             throws IOException, InterruptedException {
 
         InputStream data = requester.getWorkflowRunsWithParameter(
@@ -126,7 +101,7 @@ public class GithubActionMonitor {
         workflowRuns.addAll(parser.parseWorkflowDetails(data));
     }
 
-    private static void getWorkflowRunsNonCompleted(List<WorkflowRun> workflowRuns)
+    private static void getWorkflowRunsNonCompleted()
             throws IOException, InterruptedException {
 
         InputStream dataQueued = requester.getWorkflowRunsWithParameter("status",
@@ -138,7 +113,7 @@ public class GithubActionMonitor {
         workflowRuns.addAll(parser.parseWorkflowDetails(dataInProgress));
     }
 
-    private static void getWorkflowRunPreviousAttempts(List<WorkflowRun> workflowRuns)
+    private static void getWorkflowRunPreviousAttempts()
             throws IOException, InterruptedException {
 
         for (int i = 0; i < workflowRuns.size(); i++) {
@@ -149,12 +124,19 @@ public class GithubActionMonitor {
         }
     }
 
-    private static void updateJobsInWorkflowRuns(List<WorkflowRun> workflowRuns)
+    private static void updateJobsInWorkflowRuns()
             throws IOException, InterruptedException {
 
         for (WorkflowRun workflowRun : workflowRuns) {
-            InputStream data = requester.getJobs(workflowRun.getRunId());
-            workflowRun.setJobs(parser.parseJobDetails(data));
+            if (!workflowRun.getStatus().equals("queued")) {
+                InputStream data = requester.getJobs(workflowRun.getRunId());
+                workflowRun.setJobs(parser.parseJobDetails(data));
+            }
         }
+    }
+
+    private static void removeCompletedWorkflowRuns(Instant cutoffTimestamp) {
+        workflowRuns.removeIf(run -> (run.getStatus().equals("completed")
+                && run.getUpdatedAt().isBefore(cutoffTimestamp)));
     }
 }
