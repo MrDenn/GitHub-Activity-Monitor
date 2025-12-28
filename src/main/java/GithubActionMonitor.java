@@ -57,11 +57,8 @@ public class GithubActionMonitor {
                 getWorkflowRunsAfterTimestamp(lastTimestamp);
                 Instant newTimestamp = Instant.now();
 
+                updateStatusOfWorkflowRuns();
                 updateJobsInWorkflowRuns();
-
-//                for (WorkflowRun workflowRun : workflowRuns) {
-//                    System.out.println(workflowRun.toString());
-//                }
 
                 List<Event> eventsOfRun;
 
@@ -119,7 +116,7 @@ public class GithubActionMonitor {
         for (int i = 0; i < workflowRuns.size(); i++) {
             if (workflowRuns.get(i).getAttemptNumber() > 1){
                 InputStream dataPrev = requester.getHttpResponse(workflowRuns.get(i).getPreviousAttemptUrl());
-                workflowRuns.addAll(parser.parseSingleWorkflowRunDetails(dataPrev));
+                workflowRuns.add(parser.parseSingleWorkflowRunDetails(dataPrev));
             }
         }
     }
@@ -133,6 +130,20 @@ public class GithubActionMonitor {
                 workflowRun.setJobs(parser.parseJobDetails(data));
             }
         }
+    }
+
+    private static void updateStatusOfWorkflowRuns()
+            throws IOException, InterruptedException {
+
+        for (WorkflowRun existingRun : workflowRuns) {
+            if (!existingRun.getStatus().equals("completed")) {
+                InputStream data = requester.getSingleWorkflowRun(existingRun.getRunId(),
+                        existingRun.getAttemptNumber());
+                WorkflowRun newRun = parser.parseSingleWorkflowRunDetails(data);
+                existingRun.updateStatus(newRun);
+            }
+        }
+
     }
 
     private static void removeCompletedWorkflowRuns(Instant cutoffTimestamp) {

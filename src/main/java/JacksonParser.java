@@ -18,10 +18,10 @@ public class JacksonParser {
         return mapper.readerForListOf(WorkflowRun.class).readValue(runsNode);
     }
 
-    public List<WorkflowRun> parseSingleWorkflowRunDetails(InputStream inputStream) {
+    public WorkflowRun parseSingleWorkflowRunDetails(InputStream inputStream) {
         JsonNode root = mapper.readTree(inputStream);
 
-        return mapper.readerForListOf(WorkflowRun.class).readValue(root);
+        return mapper.readerFor(WorkflowRun.class).readValue(root);
     }
 
     public List<Job> parseJobDetails(InputStream inputStream) {

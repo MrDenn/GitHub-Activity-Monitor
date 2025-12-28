@@ -48,6 +48,23 @@ public class HttpRequestSender {
     }
 
     /**
+     * Retrieves all details of a single given workflow run
+     *
+     * @param workflowRunId Run ID of the workflow run to be queried
+     * @param workflowRunAttempt Sequential attempt number of the workflow run attempt to be queried
+     * @return All details received from REST API in raw InputStream form
+     * @throws IOException if an I/O error occurs when sending or receiving,
+     * or the client has {@linkplain ##closing shut down}
+     * @throws InterruptedException if the operation is interrupted
+     */
+    public InputStream getSingleWorkflowRun(long workflowRunId, long workflowRunAttempt)
+            throws IOException, InterruptedException {
+
+        return getHttpResponse("https://api.github.com/repos/" + this.repo + "/actions/runs/" +
+                workflowRunId + "/attempts/" + workflowRunAttempt);
+    }
+
+    /**
      * Retrieves all details of all jobs for a given repository and workflow
      *
      * @param workflowId id of the parent workflow run

@@ -121,12 +121,20 @@ public class WorkflowRun {
         return status;
     }
 
+    public String getConclusion() {
+        return conclusion;
+    }
+
     public long getRunId() {
         return runId;
     }
 
     public Instant getUpdatedAt() {
         return Instant.parse(updatedAt);
+    }
+
+    public Instant getCreatedAt() {
+        return Instant.parse(createdAt);
     }
 
     public long getAttemptNumber() {
@@ -143,5 +151,11 @@ public class WorkflowRun {
 
     public void setJobs(List<Job> jobs) {
         this.jobs = jobs;
+    }
+
+    public void updateStatus(WorkflowRun workflowRun) {
+        this.status = workflowRun.getStatus();
+        this.updatedAt = workflowRun.getUpdatedAt().toString();
+        this.conclusion = workflowRun.getConclusion();
     }
 }
