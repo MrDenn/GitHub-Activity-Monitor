@@ -25,10 +25,9 @@ public class Event {
     public String toString() {
         String output = "";
 
-        output += "Timestamp: " + timestamp + " | ";
-        output += "EventType: " + eventType + " | ";
-        output += "Name: " + name + " | ";
-        output += "Identifier: " + identifier + " | ";
+        output += timestamp + " | ";
+        output += String.format("%18s", eventType) + " | ";
+        output += String.format("%-55s", name.substring(0, Math.min(name.length(), 55))) + " | ";
         output += "HeadBranch: " + headBranch + " | ";
         output += "BranchSha: " + branchSha + "\n";
 
