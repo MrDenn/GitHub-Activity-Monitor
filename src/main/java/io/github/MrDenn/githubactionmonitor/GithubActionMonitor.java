@@ -101,8 +101,6 @@ public class GithubActionMonitor {
                 System.exit(1);
             } else if (e instanceof RuntimeException) {
                 System.out.println("Runtime exception: " + e.getMessage());
-            } else if (e instanceof IncorrectUserArgumentsException) {
-                System.out.println(e.getMessage());
             } else {
                 System.out.println("Unexpected exception: " + e.getMessage());
             }
