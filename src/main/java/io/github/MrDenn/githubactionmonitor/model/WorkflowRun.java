@@ -88,32 +88,28 @@ public class WorkflowRun {
      *
      * @return List of all events as Event objects
      */
-    public List<CatchAllEvent> getEvents(Instant timeStart, Instant timeEnd) {
-        List<CatchAllEvent> events = new ArrayList<>();
+    public List<Event> getEvents(Instant timeStart, Instant timeEnd) {
+        List<Event> events = new ArrayList<>();
 
-        events.add(new CatchAllEvent(this.createdAt, EventType.WORKFLOW_QUEUED,
-                displayTitle + " [" + name + "]", "Run ID: " + this.runId +
-                " |                    ", headBranch, headSha));
+        events.add(new Event.RunQueued(Instant.parse(createdAt), displayTitle, runId, headBranch, headSha));
 
         if (startedAt != null) {
-            events.add(new CatchAllEvent(this.startedAt, EventType.WORKFLOW_STARTED,
-                    displayTitle + " [" + name + "]", "Run ID: " + this.runId +
-                    " |                    ", headBranch, headSha));
+            events.add(new Event.RunStarted(Instant.parse(startedAt), displayTitle, runId, headBranch, headSha));
         }
-        if (conclusion != null) {
-            events.add(new CatchAllEvent(this.updatedAt, EventType.WORKFLOW_COMPLETED,
-                    displayTitle + " [" + name + "]", "Run ID: " + this.runId +
-                    " |                    ", headBranch, headSha));
-        }
+
         if (jobs != null && !jobs.isEmpty()) {
             for (Job job : jobs) {
                 events.addAll(job.getEvents(headBranch, headSha));
             }
         }
 
-        events.removeIf(e -> e.getTimestamp().isBefore(timeStart));
-        events.removeIf(e -> e.getTimestamp().isAfter(timeEnd));
-        events.sort(Comparator.comparing(CatchAllEvent::getTimestamp));
+        if (conclusion != null) {
+            events.add(new Event.RunCompleted(Instant.parse(updatedAt), displayTitle, runId, headBranch, headSha, conclusion));
+        }
+
+        events.removeIf(e -> e.timestamp().isBefore(timeStart));
+        events.removeIf(e -> e.timestamp().isAfter(timeEnd));
+        events.sort(Comparator.comparing(Event::timestamp));
 
 
         return events;

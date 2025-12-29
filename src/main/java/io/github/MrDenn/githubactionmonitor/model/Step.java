@@ -2,6 +2,7 @@ package io.github.MrDenn.githubactionmonitor.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,16 +39,14 @@ public class Step {
         return output;
     }
 
-    public List<CatchAllEvent> getEvents(long runId, long jobId, String headBranch, String headSha) {
-        List<CatchAllEvent> events = new ArrayList<>();
+    public List<Event> getEvents(long runId, long jobId, String headBranch, String headSha) {
+        List<Event> events = new ArrayList<>();
 
         if (startedAt != null) {
-            events.add(new CatchAllEvent(this.startedAt, EventType.STEP_STARTED, name, "Run ID: " +
-                    runId + " | Job ID: " + jobId, headBranch, headSha));
+            events.add(new Event.StepStarted(Instant.parse(startedAt), name, runId, jobId, number, headBranch, headSha));
         }
         if (completedAt != null) {
-            events.add(new CatchAllEvent(this.completedAt, EventType.STEP_COMPLETED, name, "Run ID: " +
-                    runId + " | Job ID: " + jobId, headBranch, headSha));
+            events.add(new Event.StepCompleted(Instant.parse(completedAt), name, runId, jobId, number, headBranch, headSha, conclusion));
         }
 
         return events;

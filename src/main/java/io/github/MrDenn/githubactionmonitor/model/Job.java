@@ -2,6 +2,7 @@ package io.github.MrDenn.githubactionmonitor.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,24 +58,19 @@ public class Job {
         return output;
     }
 
-    public List<CatchAllEvent> getEvents(String headBranch, String headSha) {
-        List<CatchAllEvent> events = new ArrayList<>();
-
-        events.add(new CatchAllEvent(this.createdAt, EventType.JOB_QUEUED, name, "Run ID: " +
-                this.runId + " | Job ID: " + this.jobId, headBranch, headSha));
+    public List<Event> getEvents(String headBranch, String headSha) {
+        List<Event> events = new ArrayList<>();
 
         if (startedAt != null) {
-            events.add(new CatchAllEvent(this.startedAt, EventType.JOB_STARTED, name, "Run ID: " +
-                    this.runId + " | Job ID: " + this.jobId, headBranch, headSha));
-        }
-
-        if (completedAt != null) {
-            events.add(new CatchAllEvent(this.completedAt, EventType.JOB_COMPLETED, name, "Run ID: " +
-                    this.runId + " | Job ID: " + this.jobId, headBranch, headSha));
+            events.add(new Event.JobStarted(Instant.parse(startedAt), name, runId, jobId, headBranch, headSha));
         }
 
         for (Step step : steps) {
-            events.addAll(step.getEvents(this.runId, this.jobId, headBranch, headSha));
+            events.addAll(step.getEvents(runId, jobId, headBranch, headSha));
+        }
+
+        if (completedAt != null) {
+            events.add(new Event.JobCompleted(Instant.parse(completedAt), name, runId, jobId, headBranch, headSha, conclusion));
         }
 
         return events;

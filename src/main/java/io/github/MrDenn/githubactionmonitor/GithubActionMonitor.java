@@ -1,6 +1,6 @@
 package io.github.MrDenn.githubactionmonitor;
 
-import io.github.MrDenn.githubactionmonitor.model.CatchAllEvent;
+import io.github.MrDenn.githubactionmonitor.model.Event;
 import io.github.MrDenn.githubactionmonitor.model.WorkflowRun;
 import io.github.MrDenn.githubactionmonitor.util.HttpRequestSender;
 import io.github.MrDenn.githubactionmonitor.util.JacksonParser;
@@ -19,7 +19,7 @@ public class GithubActionMonitor {
     private static JacksonParser parser;
 
     private static List<WorkflowRun> workflowRuns;
-    private static Map<WorkflowRunAttemptKey, Instant> lastAccessTimestamps;
+    private static List<Event> events;
 
     private static boolean isFirstIteration = true;
     private static Instant lastTimestamp;
@@ -49,7 +49,8 @@ public class GithubActionMonitor {
         lastAccessTimestamps = new HashMap<>();
 
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-        scheduler.scheduleWithFixedDelay(() -> monitorRepositoryEvents(), 0, 1, TimeUnit.SECONDS);
+        scheduler.scheduleWithFixedDelay(GithubActionMonitor::monitorRepositoryEvents,
+                0, 1, TimeUnit.SECONDS);
     }
 
     private static void monitorRepositoryEvents () {
@@ -70,12 +71,11 @@ public class GithubActionMonitor {
                 List<Event> eventsOfRun;
 
                 for (WorkflowRun run : workflowRuns) {
-                    eventsOfRun = run.getEvents(lastTimestamp, newTimestamp);
-                    events.addAll(eventsOfRun);
+                    events.addAll(run.getEvents(lastTimestamp, newTimestamp));
                 }
-                events.sort(Comparator.comparing(CatchAllEvent::getTimestamp));
+                events.sort(Comparator.comparing(Event::timestamp));
 
-                for (CatchAllEvent event : events) {
+                for (Event event : events) {
                     System.out.println(event);
                 }
 
