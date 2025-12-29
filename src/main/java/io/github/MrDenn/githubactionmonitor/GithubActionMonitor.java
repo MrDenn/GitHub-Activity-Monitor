@@ -1,5 +1,6 @@
 package io.github.MrDenn.githubactionmonitor;
 
+import io.github.MrDenn.githubactionmonitor.exception.IncorrectUserArgumentsException;
 import io.github.MrDenn.githubactionmonitor.model.Event;
 import io.github.MrDenn.githubactionmonitor.model.WorkflowRun;
 import io.github.MrDenn.githubactionmonitor.util.HttpRequestSender;
@@ -95,8 +96,13 @@ public class GithubActionMonitor {
         } catch (Exception e) {
             if (e instanceof IOException) {
                 System.out.println("I/O exception: " + e.getMessage());
+            } else if (e instanceof IncorrectUserArgumentsException) {
+                System.out.println(e.getMessage());
+                System.exit(1);
             } else if (e instanceof RuntimeException) {
                 System.out.println("Runtime exception: " + e.getMessage());
+            } else if (e instanceof IncorrectUserArgumentsException) {
+                System.out.println(e.getMessage());
             } else {
                 System.out.println("Unexpected exception: " + e.getMessage());
             }
@@ -104,7 +110,7 @@ public class GithubActionMonitor {
     }
 
     private static void getWorkflowRunsAfterTimestamp(Instant timestamp)
-            throws IOException, InterruptedException {
+            throws IOException, InterruptedException, IncorrectUserArgumentsException {
 
         InputStream data = requester.getWorkflowRunsWithParameter(
                 "created", "%3E" + timestamp.toString());
@@ -113,7 +119,7 @@ public class GithubActionMonitor {
     }
 
     private static void getWorkflowRunsNonCompleted()
-            throws IOException, InterruptedException {
+            throws IOException, InterruptedException, IncorrectUserArgumentsException {
 
         InputStream dataQueued = requester.getWorkflowRunsWithParameter("status",
                 "queued&created=%3E" + Instant.now().minusSeconds(86400).toString());
@@ -136,7 +142,7 @@ public class GithubActionMonitor {
     }
 
     private static void updateJobsInWorkflowRuns()
-            throws IOException, InterruptedException {
+            throws IOException, InterruptedException, IncorrectUserArgumentsException {
 
         for (WorkflowRun workflowRun : workflowRuns) {
             if (!workflowRun.getStatus().equals("queued")) {
@@ -147,7 +153,7 @@ public class GithubActionMonitor {
     }
 
     private static void updateStatusOfWorkflowRuns()
-            throws IOException, InterruptedException {
+            throws IOException, InterruptedException, IncorrectUserArgumentsException {
 
         for (WorkflowRun existingRun : workflowRuns) {
             if (!existingRun.getStatus().equals("completed")) {

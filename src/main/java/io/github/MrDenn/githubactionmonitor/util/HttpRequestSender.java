@@ -1,5 +1,7 @@
 package io.github.MrDenn.githubactionmonitor.util;
 
+import io.github.MrDenn.githubactionmonitor.exception.IncorrectUserArgumentsException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -41,9 +43,10 @@ public class HttpRequestSender {
      * @throws IOException if an I/O error occurs when sending or receiving,
      * or the client has {@linkplain ##closing shut down}
      * @throws InterruptedException if the operation is interrupted
+     * @throws IncorrectUserArgumentsException if the arguments provided by the user are incorrect
      */
     public InputStream getWorkflowRunsWithParameter(String paramName, String paramValue)
-            throws IOException, InterruptedException {
+            throws IOException, InterruptedException, IncorrectUserArgumentsException {
 
         return getHttpResponse("https://api.github.com/repos/" + this.repo + "/actions/runs?" +
                 paramName + "=" + paramValue);
@@ -58,9 +61,10 @@ public class HttpRequestSender {
      * @throws IOException if an I/O error occurs when sending or receiving,
      * or the client has {@linkplain ##closing shut down}
      * @throws InterruptedException if the operation is interrupted
+     * @throws IncorrectUserArgumentsException if the arguments provided by the user are incorrect
      */
     public InputStream getSingleWorkflowRun(long workflowRunId, long workflowRunAttempt)
-            throws IOException, InterruptedException {
+            throws IOException, InterruptedException, IncorrectUserArgumentsException {
 
         return getHttpResponse("https://api.github.com/repos/" + this.repo + "/actions/runs/" +
                 workflowRunId + "/attempts/" + workflowRunAttempt);
@@ -74,8 +78,10 @@ public class HttpRequestSender {
      * @throws IOException if an I/O error occurs when sending or receiving,
      * or the client has {@linkplain ##closing shut down}
      * @throws InterruptedException if the operation is interrupted
+     * @throws IncorrectUserArgumentsException if the arguments provided by the user are incorrect
      */
-    public InputStream getJobs(long workflowId) throws IOException, InterruptedException {
+    public InputStream getJobs(long workflowId)
+            throws IOException, InterruptedException, IncorrectUserArgumentsException {
 
         return getHttpResponse("https://api.github.com/repos/" + this.repo + "/actions/runs/" +
                 workflowId + "/jobs");
@@ -89,9 +95,10 @@ public class HttpRequestSender {
      * @throws IOException if an I/O error occurs when sending or receiving,
      * or the client has {@linkplain ##closing shut down}
      * @throws InterruptedException if the operation is interrupted
+     * @throws IncorrectUserArgumentsException if the arguments provided by the user are incorrect
      */
     public InputStream getHttpResponse(String uri)
-            throws IOException, InterruptedException {
+            throws IOException, InterruptedException, IncorrectUserArgumentsException {
 
         HttpRequest request = HttpRequest.newBuilder()
                 .GET()
@@ -105,6 +112,18 @@ public class HttpRequestSender {
         HttpResponse<InputStream> response =
                 httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
 
-        return response.body();
+        if (response.statusCode() >= 200 && response.statusCode() < 300) {
+            return response.body();
+        } else if (response.statusCode() == 404) {
+            throw new IncorrectUserArgumentsException("repository address");
+        } else if (response.statusCode() == 401) {
+            throw new IncorrectUserArgumentsException("GitHub token");
+        } else if (response.statusCode() == 403 || response.statusCode() == 429) {
+            System.out.println("WARNING: Rate limit exceeded, retrying with delay");
+            return this.getHttpResponse(uri);
+        } else {
+            System.out.println("WARNING: Unusual HTTP Code received: " + response.statusCode());
+            return response.body();
+        }
     }
 }
