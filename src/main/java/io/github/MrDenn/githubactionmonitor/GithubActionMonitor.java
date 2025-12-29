@@ -29,9 +29,9 @@ public class GithubActionMonitor {
         String token;
 
         if (args.length != 2 && args.length != 3) {
-            System.out.println("Input arguments incorrect. Proper usage:");
-            System.out.println("java GithubActionMonitor <owner/repository combination> <GitHub access token>");
-            System.out.println("java GithubActionMonitor <owner> <repository> <GitHub access token>");
+            System.out.println("Input arguments incorrect. Proper usage (either of the following):");
+            System.out.println("java -jar [utility].jar <owner/repository combination> <GitHub access token>");
+            System.out.println("java -jar [utility].jar <owner> <repository> <GitHub access token>");
             return;
         } else if (args.length == 2) {
             repo = args[0];
