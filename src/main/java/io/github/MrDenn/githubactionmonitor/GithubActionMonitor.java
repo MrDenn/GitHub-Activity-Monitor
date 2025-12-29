@@ -17,12 +17,14 @@ public class GithubActionMonitor {
 
     private static HttpRequestSender requester;
     private static JacksonParser parser;
+    private static PersistenceManager saver;
 
     private static List<WorkflowRun> workflowRuns;
     private static List<Event> events;
 
     private static boolean isFirstIteration = true;
     private static Instant lastTimestamp;
+    private static String repoPath;
 
     public static void main(String[] args) {
         String repo;
@@ -43,9 +45,13 @@ public class GithubActionMonitor {
 
         requester = new HttpRequestSender(repo, token, 60);
         parser = new JacksonParser();
+        saver = new PersistenceManager();
 
         workflowRuns = new ArrayList<>();
         events = new ArrayList<>();
+
+        repoPath = repo;
+        saver.load();
 
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleWithFixedDelay(GithubActionMonitor::monitorRepositoryEvents,
@@ -76,6 +82,8 @@ public class GithubActionMonitor {
                 for (Event event : events) {
                     System.out.println(event);
                 }
+                saver.update(repoPath, newTimestamp);
+                saver.save();
 
                 events.clear();
 
