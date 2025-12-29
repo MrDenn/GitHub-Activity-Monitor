@@ -108,6 +108,7 @@ public class WorkflowRun {
         }
 
         events.removeIf(e -> e.timestamp().isBefore(timeStart));
+        events.removeIf(e -> e.timestamp().equals(timeEnd));
         events.removeIf(e -> e.timestamp().isAfter(timeEnd));
         events.sort(Comparator.comparing(Event::timestamp));
 
