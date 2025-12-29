@@ -193,11 +193,23 @@ public class GithubActionMonitor {
 
     }
 
+    /**
+     * Removes all workflow runs from the WorkflowRuns List that have been completed before
+     * [cutoffTimestamp]. The cutoffTimestamp is to ensure that all events have already been
+     * reported for the workflow runs being deleted.
+     *
+     * @param cutoffTimestamp timestamp, such that all events that occurred before it have been
+     *                        processed and printed
+     */
     private static void removeCompletedWorkflowRuns(Instant cutoffTimestamp) {
         workflowRuns.removeIf(run -> (run.getStatus().equals("completed")
                 && run.getUpdatedAt().isBefore(cutoffTimestamp)));
     }
 
+    /**
+     * Removes all workflow runs from the WorkflowRuns List that are still queued after 24 hours
+     * since being created (very likely stale or "stuck").
+     */
     private static void removeStuckQueuedWorkflowRuns() {
         workflowRuns.removeIf(run -> run.getCreatedAt().isBefore(Instant.now().minusSeconds(86400)));
     }
