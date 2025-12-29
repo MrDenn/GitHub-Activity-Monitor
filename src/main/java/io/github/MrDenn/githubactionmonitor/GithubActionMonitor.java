@@ -130,6 +130,33 @@ public class GithubActionMonitor {
         workflowRuns.addAll(parser.parseWorkflowDetails(dataInProgress));
     }
 
+    /**
+     * Adds the last 100 workflow runs that have been created since the termination of the last
+     * time this utility was monitoring the same repository.
+     *
+     * @throws IOException if an I/O error occurs when sending or receiving,
+     * or the client has {@linkplain ##closing shut down}
+     * @throws InterruptedException if the operation is interrupted
+     * @throws IncorrectUserArgumentsException if the arguments provided by the user are incorrect
+     */
+    private static void getWorkflowRunsFromSavedTimestamp()
+            throws IOException, InterruptedException, IncorrectUserArgumentsException {
+
+        saver.load();
+        Instant timestamp = saver.get(repoPath);
+
+        if (timestamp.isAfter(Instant.now())) {
+            System.out.println("Repository haven't been queried before, starting from scratch");
+        } else {
+            System.out.println(
+                    "Repository has been queried before, retrieving all events after last run");
+
+            InputStream data = requester.getWorkflowRunsWithParameter("created",
+                    "%3E" + timestamp.toString() + "&per_page=100");
+            workflowRuns.addAll(parser.parseWorkflowDetails(data));
+        }
+    }
+
     private static void getWorkflowRunPreviousAttempts()
             throws IOException, InterruptedException {
 

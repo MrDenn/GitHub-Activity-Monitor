@@ -39,7 +39,7 @@ public class PersistenceManager {
                 .filter(rt -> rt.repository.equals(repository))
                 .map(rt -> Instant.parse(rt.timestamp))
                 .findFirst()
-                .orElse(Instant.now());
+                .orElse(Instant.MAX);
     }
 
     public void update(String repository, Instant timestamp) {
