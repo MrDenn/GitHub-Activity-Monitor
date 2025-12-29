@@ -144,10 +144,6 @@ public class WorkflowRun {
         return previousAttemptUrl;
     }
 
-    public WorkflowRunAttemptKey getRunAttemptKey() {
-        return new WorkflowRunAttemptKey(this.runId, this.attemptNumber);
-    }
-
     public void setJobs(List<Job> jobs) {
         this.jobs = jobs;
     }
