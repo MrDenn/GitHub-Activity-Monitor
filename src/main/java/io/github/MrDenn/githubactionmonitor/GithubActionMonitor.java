@@ -46,7 +46,6 @@ public class GithubActionMonitor {
 
         workflowRuns = new ArrayList<>();
         events = new ArrayList<>();
-        lastAccessTimestamps = new HashMap<>();
 
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleWithFixedDelay(GithubActionMonitor::monitorRepositoryEvents,
@@ -68,7 +67,6 @@ public class GithubActionMonitor {
                 updateStatusOfWorkflowRuns();
                 updateJobsInWorkflowRuns();
 
-                List<Event> eventsOfRun;
 
                 for (WorkflowRun run : workflowRuns) {
                     events.addAll(run.getEvents(lastTimestamp, newTimestamp));
