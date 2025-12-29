@@ -107,7 +107,7 @@ public class GithubActionMonitor {
             throws IOException, InterruptedException {
 
         InputStream dataQueued = requester.getWorkflowRunsWithParameter("status",
-                "queued");
+                "queued&created=%3E" + Instant.now().minusSeconds(86400).toString());
         InputStream dataInProgress = requester.getWorkflowRunsWithParameter("status",
                 "in_progress");
 
