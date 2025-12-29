@@ -1,3 +1,5 @@
+package io.github.MrDenn.githubactionmonitor.model;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -86,20 +88,20 @@ public class WorkflowRun {
      *
      * @return List of all events as Event objects
      */
-    public List<Event> getEvents(Instant timeStart, Instant timeEnd) {
-        List<Event> events = new ArrayList<>();
+    public List<CatchAllEvent> getEvents(Instant timeStart, Instant timeEnd) {
+        List<CatchAllEvent> events = new ArrayList<>();
 
-        events.add(new Event(this.createdAt, EventType.WORKFLOW_QUEUED,
+        events.add(new CatchAllEvent(this.createdAt, EventType.WORKFLOW_QUEUED,
                 displayTitle + " [" + name + "]", "Run ID: " + this.runId +
                 " |                    ", headBranch, headSha));
 
         if (startedAt != null) {
-            events.add(new Event(this.startedAt, EventType.WORKFLOW_STARTED,
+            events.add(new CatchAllEvent(this.startedAt, EventType.WORKFLOW_STARTED,
                     displayTitle + " [" + name + "]", "Run ID: " + this.runId +
                     " |                    ", headBranch, headSha));
         }
         if (conclusion != null) {
-            events.add(new Event(this.updatedAt, EventType.WORKFLOW_COMPLETED,
+            events.add(new CatchAllEvent(this.updatedAt, EventType.WORKFLOW_COMPLETED,
                     displayTitle + " [" + name + "]", "Run ID: " + this.runId +
                     " |                    ", headBranch, headSha));
         }
@@ -111,7 +113,7 @@ public class WorkflowRun {
 
         events.removeIf(e -> e.getTimestamp().isBefore(timeStart));
         events.removeIf(e -> e.getTimestamp().isAfter(timeEnd));
-        events.sort(Comparator.comparing(Event::getTimestamp));
+        events.sort(Comparator.comparing(CatchAllEvent::getTimestamp));
 
 
         return events;

@@ -1,3 +1,5 @@
+package io.github.MrDenn.githubactionmonitor.util;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;

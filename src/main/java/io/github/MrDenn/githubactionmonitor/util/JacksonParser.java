@@ -1,3 +1,7 @@
+package io.github.MrDenn.githubactionmonitor.util;
+
+import io.github.MrDenn.githubactionmonitor.model.Job;
+import io.github.MrDenn.githubactionmonitor.model.WorkflowRun;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 

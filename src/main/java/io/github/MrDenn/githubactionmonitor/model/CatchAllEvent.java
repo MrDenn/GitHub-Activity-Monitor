@@ -1,6 +1,8 @@
+package io.github.MrDenn.githubactionmonitor.model;
+
 import java.time.Instant;
 
-public class Event {
+public class CatchAllEvent {
     private final String timestamp;
     private final EventType eventType;
     private final String name;
@@ -8,8 +10,8 @@ public class Event {
     private final String headBranch;
     private final String branchSha;
 
-    public Event(String timestamp, EventType eventType, String name, String identifier,
-                 String headBranch, String branchSha) {
+    public CatchAllEvent(String timestamp, EventType eventType, String name, String identifier,
+                         String headBranch, String branchSha) {
 
         this.timestamp = timestamp;
         this.eventType = eventType;

@@ -1,3 +1,10 @@
+package io.github.MrDenn.githubactionmonitor;
+
+import io.github.MrDenn.githubactionmonitor.model.CatchAllEvent;
+import io.github.MrDenn.githubactionmonitor.model.WorkflowRun;
+import io.github.MrDenn.githubactionmonitor.util.HttpRequestSender;
+import io.github.MrDenn.githubactionmonitor.util.JacksonParser;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
@@ -12,7 +19,6 @@ public class GithubActionMonitor {
     private static JacksonParser parser;
 
     private static List<WorkflowRun> workflowRuns;
-    private static List<Event> events;
     private static Map<WorkflowRunAttemptKey, Instant> lastAccessTimestamps;
 
     private static boolean isFirstIteration = true;
@@ -67,9 +73,9 @@ public class GithubActionMonitor {
                     eventsOfRun = run.getEvents(lastTimestamp, newTimestamp);
                     events.addAll(eventsOfRun);
                 }
-                events.sort(Comparator.comparing(Event::getTimestamp));
+                events.sort(Comparator.comparing(CatchAllEvent::getTimestamp));
 
-                for (Event event : events) {
+                for (CatchAllEvent event : events) {
                     System.out.println(event);
                 }
 

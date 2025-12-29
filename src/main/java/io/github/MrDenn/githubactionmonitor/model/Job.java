@@ -1,3 +1,5 @@
+package io.github.MrDenn.githubactionmonitor.model;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
@@ -55,19 +57,19 @@ public class Job {
         return output;
     }
 
-    public List<Event> getEvents(String headBranch, String headSha) {
-        List<Event> events = new ArrayList<>();
+    public List<CatchAllEvent> getEvents(String headBranch, String headSha) {
+        List<CatchAllEvent> events = new ArrayList<>();
 
-        events.add(new Event(this.createdAt, EventType.JOB_QUEUED, name, "Run ID: " +
+        events.add(new CatchAllEvent(this.createdAt, EventType.JOB_QUEUED, name, "Run ID: " +
                 this.runId + " | Job ID: " + this.jobId, headBranch, headSha));
 
         if (startedAt != null) {
-            events.add(new Event(this.startedAt, EventType.JOB_STARTED, name, "Run ID: " +
+            events.add(new CatchAllEvent(this.startedAt, EventType.JOB_STARTED, name, "Run ID: " +
                     this.runId + " | Job ID: " + this.jobId, headBranch, headSha));
         }
 
         if (completedAt != null) {
-            events.add(new Event(this.completedAt, EventType.JOB_COMPLETED, name, "Run ID: " +
+            events.add(new CatchAllEvent(this.completedAt, EventType.JOB_COMPLETED, name, "Run ID: " +
                     this.runId + " | Job ID: " + this.jobId, headBranch, headSha));
         }
 
